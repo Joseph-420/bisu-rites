@@ -173,7 +173,7 @@ try {
             <a href="#offices">Offices</a>
             <a href="#statistics">Statistics</a>
             <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"]): ?>
-                <a href="logout.php">Logout</a>
+                <a href="logout.php">Login</a>
                 <?php if ($_SESSION["role_id"] == 1): ?>
                     <a href="admin/admin_dashboard.php" class="btn-login"><i class="fas fa-lock-open mr-1"></i>Admin Panel</a>
                 <?php elseif ($_SESSION["role_id"] == 2): ?>

@@ -12,13 +12,7 @@ $page_title = "ITSO Director Dashboard";
 include "../includes/header.php";
 ?>
 
-<style>
-    .page-container {
-        display: flex;
-        width: 100%;
-        height: 100%;
-    }
-</style>
+
 
 <div class="page-container">
     <?php include "../includes/navigation.php"; ?>
