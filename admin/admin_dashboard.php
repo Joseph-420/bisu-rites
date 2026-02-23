@@ -2,26 +2,61 @@
 session_start();
 require_once "../db_connect.php";
 
-// Check if the user is logged in
+// Check if the user is logged in and has admin role
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION["role_id"] !== 1){
     // Redirect to login
     header("location: ../login.php");
     exit;
 }
 
+// --- NEW CODE: FETCH STATISTICS FROM DATABASE ---
+
+// 1. Get Ongoing R&D Projects Count
+$rd_count = 0;
+$rd_query = $conn->query("SELECT COUNT(*) as count FROM rd_projects WHERE status = 'Ongoing'");
+if($rd_query) {
+    $row = $rd_query->fetch_assoc();
+    $rd_count = $row['count'];
+}
+
+// 2. Get ITSO Assets Count (Wait until table exists, use try/catch to avoid errors)
+$itso_count = 0;
+try {
+    $itso_query = $conn->query("SELECT COUNT(*) as count FROM ip_assets");
+    if($itso_query) {
+        $row = $itso_query->fetch_assoc();
+        $itso_count = $row['count'];
+    }
+} catch (Exception $e) { $itso_count = 0; }
+
+// 3. Get Extension Programs Count
+$ext_count = 0;
+try {
+    $ext_query = $conn->query("SELECT COUNT(*) as count FROM ext_projects");
+    if($ext_query) {
+        $row = $ext_query->fetch_assoc();
+        $ext_count = $row['count'];
+    }
+} catch (Exception $e) { $ext_count = 0; }
+
+// 4. Get Total Users Count
+$user_count = 0;
+$user_query = $conn->query("SELECT COUNT(*) as count FROM users");
+if($user_query) {
+    $row = $user_query->fetch_assoc();
+    $user_count = $row['count'];
+}
+// --- END NEW CODE ---
+
 $page_title = "Admin Dashboard";
 include "../includes/header.php";
 ?>
 
-
-
 <div class="page-container">
     <?php include "../includes/navigation.php"; ?>
 
-    <!-- Main Content -->
     <div class="main-content">
         
-        <!-- Header -->
         <div class="header">
             <h1 class="header-title">
                 <i class="fas fa-chart-line" style="margin-right: 0.75rem; color: var(--primary);"></i>
@@ -42,10 +77,8 @@ include "../includes/header.php";
             </div>
         </div>
 
-        <!-- Content Wrapper -->
         <div class="content-wrapper content-wrapper-full">
             
-            <!-- Welcome Alert -->
             <div class="alert alert-primary animate-fadeIn mb-6">
                 <i class="fas fa-info-circle alert-icon"></i>
                 <div class="alert-content">
@@ -54,14 +87,13 @@ include "../includes/header.php";
                 </div>
             </div>
 
-            <!-- Statistics Grid -->
-            <div class="grid grid-cols-3">
-                <!-- R&D Projects Card -->
+            <div class="grid grid-cols-3 gap-4">
+                
                 <div class="stat-card animate-fadeIn">
                     <div class="stat-card-header">
                         <div>
                             <div class="stat-card-label">R&D Projects</div>
-                            <div class="stat-card-value">0</div>
+                            <div class="stat-card-value"><?php echo $rd_count; ?></div>
                             <div class="stat-card-footer positive">
                                 <i class="fas fa-arrow-up"></i> Ongoing Research
                             </div>
@@ -72,12 +104,11 @@ include "../includes/header.php";
                     </div>
                 </div>
 
-                <!-- ITSO Assets Card -->
                 <div class="stat-card variant-secondary animate-fadeIn">
                     <div class="stat-card-header">
                         <div>
                             <div class="stat-card-label">ITSO Assets</div>
-                            <div class="stat-card-value">0</div>
+                            <div class="stat-card-value"><?php echo $itso_count; ?></div>
                             <div class="stat-card-footer">Patents & Copyrights</div>
                         </div>
                         <div class="stat-card-icon" style="color: var(--secondary);">
@@ -86,12 +117,11 @@ include "../includes/header.php";
                     </div>
                 </div>
 
-                <!-- Extension Programs Card -->
                 <div class="stat-card variant-success animate-fadeIn">
                     <div class="stat-card-header">
                         <div>
                             <div class="stat-card-label">Extension Programs</div>
-                            <div class="stat-card-value">0</div>
+                            <div class="stat-card-value"><?php echo $ext_count; ?></div>
                             <div class="stat-card-footer">Community Engagement</div>
                         </div>
                         <div class="stat-card-icon" style="color: var(--success);">
@@ -99,11 +129,10 @@ include "../includes/header.php";
                         </div>
                     </div>
                 </div>
+                
             </div>
 
-            <!-- Main Stats Section -->
-            <div class="grid grid-cols-2 mt-6">
-                <!-- Recent Activities Card -->
+            <div class="grid grid-cols-2 gap-4 mt-6">
                 <div class="card animate-fadeIn">
                     <div class="card-header">
                         <h2>Recent System Activities</h2>
@@ -119,7 +148,6 @@ include "../includes/header.php";
                     </div>
                 </div>
 
-                <!-- Quick Stats Card -->
                 <div class="card animate-fadeIn">
                     <div class="card-header">
                         <h2>System Overview</h2>
@@ -129,7 +157,7 @@ include "../includes/header.php";
                         <div class="flex flex-col gap-4">
                             <div class="flex justify-between items-center">
                                 <span class="text-sm">Total Users</span>
-                                <span class="font-bold text-lg">--</span>
+                                <span class="font-bold text-lg"><?php echo $user_count; ?></span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-sm">Active Sessions</span>
@@ -146,27 +174,26 @@ include "../includes/header.php";
                 </div>
             </div>
 
-            <!-- Quick Actions -->
             <div class="card mt-6 animate-fadeIn">
                 <div class="card-header">
                     <h2>Quick Actions</h2>
                     <p>Common administrative tasks</p>
                 </div>
                 <div class="card-body">
-                    <div class="grid grid-cols-4">
-                        <a href="admin_users.php" class="flex flex-col items-center gap-2 p-4 rounded text-center hover:bg-blue-50 transition">
+                    <div class="grid grid-cols-4 gap-4">
+                        <a href="admin_users.php" class="flex flex-col items-center gap-2 p-4 rounded text-center hover:bg-blue-50 transition cursor-pointer" style="text-decoration: none; color: inherit;">
                             <i class="fas fa-user-plus text-2xl" style="color: var(--primary);"></i>
                             <span class="text-sm font-semibold">Add User</span>
                         </a>
-                        <a href="admin_colleges.php" class="flex flex-col items-center gap-2 p-4 rounded text-center hover:bg-purple-50 transition">
+                        <a href="admin_colleges.php" class="flex flex-col items-center gap-2 p-4 rounded text-center hover:bg-purple-50 transition cursor-pointer" style="text-decoration: none; color: inherit;">
                             <i class="fas fa-university text-2xl" style="color: var(--secondary);"></i>
                             <span class="text-sm font-semibold">Manage Colleges</span>
                         </a>
-                        <button class="flex flex-col items-center gap-2 p-4 rounded text-center hover:bg-green-50 transition border-none bg-transparent cursor-pointer">
+                        <button class="flex flex-col items-center gap-2 p-4 rounded text-center hover:bg-green-50 transition border-none bg-transparent cursor-pointer w-full">
                             <i class="fas fa-file-download text-2xl" style="color: var(--success);"></i>
                             <span class="text-sm font-semibold">Export Data</span>
                         </button>
-                        <button class="flex flex-col items-center gap-2 p-4 rounded text-center hover:bg-orange-50 transition border-none bg-transparent cursor-pointer">
+                        <button class="flex flex-col items-center gap-2 p-4 rounded text-center hover:bg-orange-50 transition border-none bg-transparent cursor-pointer w-full">
                             <i class="fas fa-cog text-2xl" style="color: var(--warning);"></i>
                             <span class="text-sm font-semibold">Settings</span>
                         </button>
@@ -176,7 +203,6 @@ include "../includes/header.php";
 
         </div>
     </div>
-
 </div>
 
 <?php include "../includes/footer.php"; ?>
