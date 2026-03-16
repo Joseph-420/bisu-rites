@@ -174,6 +174,7 @@ include "../includes/header.php";
                                     <option value="3" <?php echo $role_id == 3 ? 'selected' : ''; ?>>ITSO Director</option>
                                     <option value="4" <?php echo $role_id == 4 ? 'selected' : ''; ?>>Extension Director</option>
                                     <option value="5" <?php echo $role_id == 5 ? 'selected' : ''; ?>>Faculty</option>
+                                    <option value="6" <?php echo $role_id == 6 ? 'selected' : ''; ?>>Student</option>
                                     <option value="1" <?php echo $role_id == 1 ? 'selected' : ''; ?>>Superadmin</option>
                                 </select>
                                 <p class="text-xs text-muted mt-1">Superadmin has full system access. Assign carefully.</p>

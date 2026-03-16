@@ -83,7 +83,7 @@ if (strpos(dirname($_SERVER['PHP_SELF']), '/admin') !== false) {
                 </a>
             </li>
             <li class="sidebar-nav-item">
-                <a href="#" class="sidebar-nav-link">
+                <a href="<?php echo $base_link; ?>rd_researchers.php" class="sidebar-nav-link <?php echo $current_file == 'rd_researchers.php' ? 'active' : ''; ?>">
                     <i class="fas fa-users"></i>
                     <span>Researchers</span>
                 </a>
@@ -96,21 +96,15 @@ if (strpos(dirname($_SERVER['PHP_SELF']), '/admin') !== false) {
                 </a>
             </li>
             <li class="sidebar-nav-item">
-                <a href="#" class="sidebar-nav-link">
+                <a href="<?php echo $base_link; ?>itso_assets.php" class="sidebar-nav-link <?php echo strpos($current_file, 'itso_asset') !== false ? 'active' : ''; ?>">
                     <i class="fas fa-lightbulb"></i>
-                    <span>Innovations</span>
+                    <span>IP Disclosures</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
-                <a href="#" class="sidebar-nav-link">
-                    <i class="fas fa-briefcase"></i>
-                    <span>IP Projects</span>
-                </a>
-            </li>
-            <li class="sidebar-nav-item">
-                <a href="#" class="sidebar-nav-link">
-                    <i class="fas fa-certificate"></i>
-                    <span>Patents</span>
+                <a href="<?php echo $base_link; ?>itso_commercialization.php" class="sidebar-nav-link <?php echo strpos($current_file, 'itso_comm') !== false ? 'active' : ''; ?>">
+                    <i class="fas fa-file-contract"></i>
+                    <span>Commercialization</span>
                 </a>
             </li>
         <?php elseif ($_SESSION["role_id"] == 4): // Extension Director Navigation ?>
@@ -121,21 +115,15 @@ if (strpos(dirname($_SERVER['PHP_SELF']), '/admin') !== false) {
                 </a>
             </li>
             <li class="sidebar-nav-item">
-                <a href="#" class="sidebar-nav-link">
+                <a href="<?php echo $base_link; ?>ext_projects.php" class="sidebar-nav-link <?php echo strpos($current_file, 'ext_project') !== false ? 'active' : ''; ?>">
                     <i class="fas fa-handshake"></i>
-                    <span>Programs</span>
+                    <span>Extension Projects</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
-                <a href="#" class="sidebar-nav-link">
-                    <i class="fas fa-users-cog"></i>
-                    <span>Partnerships</span>
-                </a>
-            </li>
-            <li class="sidebar-nav-item">
-                <a href="#" class="sidebar-nav-link">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Reports</span>
+                <a href="<?php echo $base_link; ?>ext_monitoring.php" class="sidebar-nav-link <?php echo strpos($current_file, 'ext_monitoring') !== false ? 'active' : ''; ?>">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Impact Monitoring</span>
                 </a>
             </li>
         <?php endif; ?>

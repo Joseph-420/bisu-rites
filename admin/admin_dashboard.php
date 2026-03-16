@@ -31,6 +31,20 @@ if($dir_query) {
     $director_count = $dir_query->fetch_assoc()['count'];
 }
 
+// 4. Get Faculty Count
+$faculty_count = 0;
+$fac_query = $conn->query("SELECT COUNT(*) as count FROM users WHERE role_id = 5");
+if($fac_query) {
+    $faculty_count = $fac_query->fetch_assoc()['count'];
+}
+
+// 5. Get Student Count
+$student_count = 0;
+$stu_query = $conn->query("SELECT COUNT(*) as count FROM users WHERE role_id = 6");
+if($stu_query) {
+    $student_count = $stu_query->fetch_assoc()['count'];
+}
+
 $page_title = "System Admin Dashboard";
 include "../includes/header.php";
 ?>
@@ -59,11 +73,11 @@ include "../includes/header.php";
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
             
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-blue-500">
                 <div>
-                    <p class="text-sm font-medium text-slate-500 mb-1">Total System Users</p>
+                    <p class="text-sm font-medium text-slate-500 mb-1">Total Users</p>
                     <h3 class="text-3xl font-bold text-slate-800"><?php echo $user_count; ?></h3>
                 </div>
                 <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 text-xl">
@@ -71,9 +85,9 @@ include "../includes/header.php";
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-emerald-500">
                 <div>
-                    <p class="text-sm font-medium text-slate-500 mb-1">Active Colleges</p>
+                    <p class="text-sm font-medium text-slate-500 mb-1">Colleges</p>
                     <h3 class="text-3xl font-bold text-slate-800"><?php echo $college_count; ?></h3>
                 </div>
                 <div class="w-12 h-12 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600 text-xl">
@@ -81,13 +95,33 @@ include "../includes/header.php";
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-purple-500">
                 <div>
-                    <p class="text-sm font-medium text-slate-500 mb-1">Office Directors</p>
+                    <p class="text-sm font-medium text-slate-500 mb-1">Directors</p>
                     <h3 class="text-3xl font-bold text-slate-800"><?php echo $director_count; ?></h3>
                 </div>
                 <div class="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center text-purple-600 text-xl">
                     <i class="fas fa-user-tie"></i>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-amber-500">
+                <div>
+                    <p class="text-sm font-medium text-slate-500 mb-1">Faculty</p>
+                    <h3 class="text-3xl font-bold text-slate-800"><?php echo $faculty_count; ?></h3>
+                </div>
+                <div class="w-12 h-12 bg-amber-50 rounded-lg flex items-center justify-center text-amber-600 text-xl">
+                    <i class="fas fa-chalkboard-user"></i>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-cyan-500">
+                <div>
+                    <p class="text-sm font-medium text-slate-500 mb-1">Students</p>
+                    <h3 class="text-3xl font-bold text-slate-800"><?php echo $student_count; ?></h3>
+                </div>
+                <div class="w-12 h-12 bg-cyan-50 rounded-lg flex items-center justify-center text-cyan-600 text-xl">
+                    <i class="fas fa-graduation-cap"></i>
                 </div>
             </div>
 

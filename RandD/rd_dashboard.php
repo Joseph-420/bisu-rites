@@ -25,6 +25,24 @@ $completed_count = 0;
 $completed_query = $conn->query("SELECT COUNT(*) as count FROM rd_projects WHERE status IN ('Completed', 'Published')");
 if($completed_query) $completed_count = $completed_query->fetch_assoc()['count'];
 
+// --- DATA FOR CHARTS ---
+$status_data = [];
+$status_query = $conn->query("SELECT status, COUNT(*) as count FROM rd_projects GROUP BY status");
+if($status_query) {
+    while($row = $status_query->fetch_assoc()) {
+        $status_data[$row['status']] = (int)$row['count'];
+    }
+}
+
+// College distribution
+$college_data = [];
+$college_query = $conn->query("SELECT c.college_code, COUNT(*) as count FROM rd_projects p LEFT JOIN colleges c ON p.college_id = c.college_id GROUP BY c.college_code");
+if($college_query) {
+    while($row = $college_query->fetch_assoc()) {
+        $college_data[$row['college_code'] ?? 'Unassigned'] = (int)$row['count'];
+    }
+}
+
 $page_title = "R&D Director Dashboard";
 include "../includes/header.php";
 ?>
@@ -123,8 +141,58 @@ include "../includes/header.php";
                 </table>
             </div>
         </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <h3 class="text-lg font-bold text-slate-800 mb-4">Project Status Distribution</h3>
+                <div class="flex justify-center" style="max-height: 300px;">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <h3 class="text-lg font-bold text-slate-800 mb-4">Projects by College</h3>
+                <div class="flex justify-center" style="max-height: 300px;">
+                    <canvas id="collegeChart"></canvas>
+                </div>
+            </div>
+        </div>
         
     </div>
 </div>
 
 <?php include "../includes/footer.php"; ?>
+
+<script>
+const statusLabels = <?php echo json_encode(array_keys($status_data)); ?>;
+const statusValues = <?php echo json_encode(array_values($status_data)); ?>;
+const statusColors = {
+    'Submitted': '#f59e0b', 'Under Review': '#f97316', 'Approved': '#8b5cf6',
+    'Ongoing': '#3b82f6', 'Completed': '#10b981', 'Published': '#06b6d4', 'Deferred': '#6b7280'
+};
+const statusBgColors = statusLabels.map(l => statusColors[l] || '#94a3b8');
+
+if(statusLabels.length > 0) {
+    new Chart(document.getElementById('statusChart'), {
+        type: 'doughnut',
+        data: { labels: statusLabels, datasets: [{ data: statusValues, backgroundColor: statusBgColors, borderWidth: 2, borderColor: '#fff' }] },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true, pointStyle: 'circle' } } } }
+    });
+} else {
+    document.getElementById('statusChart').parentElement.innerHTML += '<p class="text-center text-slate-400 mt-4">No project data yet.</p>';
+}
+
+const collegeLabels = <?php echo json_encode(array_keys($college_data)); ?>;
+const collegeValues = <?php echo json_encode(array_values($college_data)); ?>;
+const collegeColors = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#ec4899','#14b8a6','#6366f1'];
+
+if(collegeLabels.length > 0) {
+    new Chart(document.getElementById('collegeChart'), {
+        type: 'pie',
+        data: { labels: collegeLabels, datasets: [{ data: collegeValues, backgroundColor: collegeColors.slice(0, collegeLabels.length), borderWidth: 2, borderColor: '#fff' }] },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true, pointStyle: 'circle' } } } }
+    });
+} else {
+    document.getElementById('collegeChart').parentElement.innerHTML += '<p class="text-center text-slate-400 mt-4">No project data yet.</p>';
+}
+</script>

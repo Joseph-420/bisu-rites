@@ -96,6 +96,7 @@ if (strpos($current_dir, '/admin') !== false) {
             width: 100% !important;
             box-sizing: border-box !important;
         }
+
     </style>
 </head>
 <body class="bg-gray-50">

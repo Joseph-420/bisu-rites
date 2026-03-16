@@ -22,9 +22,6 @@ include "../includes/header.php";
     <div class="main-content flex-1 flex flex-col overflow-y-auto p-8 bg-slate-50">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold text-slate-800"><i class="fas fa-flask-vial mr-2 text-blue-600"></i> Research Portfolio</h1>
-            <a href="rd_project_add.php" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition text-sm font-medium">
-                <i class="fas fa-plus mr-1"></i> Encode Old Project
-            </a>
         </div>
 
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">

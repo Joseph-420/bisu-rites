@@ -103,15 +103,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <style>
         * {
             font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
         }
         
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .login-container {
             animation: slideIn 0.6s ease-out;
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            height: auto;
+            max-height: 95vh;
+            overflow-y: auto;
         }
         
         @keyframes slideIn {
@@ -180,118 +198,135 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .form-group {
             transition: all 0.3s ease;
         }
+
+        /* Scrollbar styling */
+        .login-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .login-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .login-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .login-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
     </style>
 </head>
 <body>
-    <div class="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
-        <div class="login-container w-full max-w-md">
-            <!-- Main Card -->
-            <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
-                
-                <!-- Header Section with Gradient -->
-                <div class="bg-gradient-to-r from-slate-900 to-slate-800 px-6 sm:px-8 py-8 sm:py-10">
-                    <div class="flex flex-col items-center">
-                        <div class="logo-icon mb-4">
-                            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center">
-                                <i class="fas fa-microscope text-2xl text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text" style="background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
-                            </div>
+    <div class="login-container">
+        <!-- Main Card -->
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden mx-4 sm:mx-0">
+            
+            <!-- Header Section with Gradient -->
+            <div class="bg-gradient-to-r from-slate-900 to-slate-800 px-6 sm:px-8 py-6">
+                <div class="flex flex-col items-center">
+                    <div class="logo-icon mb-3">
+                        <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-microscope text-xl text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text" style="background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
                         </div>
-                        <h1 class="text-2xl sm:text-3xl font-bold text-white text-center">BISU R.I.T.E.S</h1>
-                        <p class="text-slate-300 text-sm mt-2 text-center">Research, Innovation, and Extension System</p>
                     </div>
+                    <h1 class="text-2xl font-bold text-white text-center">BISU R.I.T.E.S</h1>
+                    <p class="text-slate-300 text-xs mt-1 text-center">Research, Innovation, and Extension System</p>
                 </div>
+            </div>
+            
+            <!-- Body Section - Compact -->
+            <div class="px-6 sm:px-8 py-6">
+                <p class="text-center text-slate-600 text-xs mb-5">Sign in to your account to continue</p>
                 
-                <!-- Body Section -->
-                <div class="px-6 sm:px-8 py-8 sm:py-10">
-                    <p class="text-center text-slate-600 text-sm mb-8">Sign in to your account to continue</p>
+                <!-- Error Alert -->
+                <?php 
+                if(!empty($login_err)){
+                    echo '<div class="error-alert mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start text-sm">
+                        <i class="fas fa-exclamation-circle text-red-500 mt-0.5 mr-2 flex-shrink-0 text-xs"></i>
+                        <span class="text-red-700 text-xs">' . htmlspecialchars($login_err) . '</span>
+                    </div>';
+                }        
+                ?>
+                
+                <!-- Login Form -->
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" class="space-y-4">
                     
-                    <!-- Error Alert -->
-                    <?php 
-                    if(!empty($login_err)){
-                        echo '<div class="error-alert mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start">
-                            <i class="fas fa-exclamation-circle text-red-500 mt-0.5 mr-3 flex-shrink-0"></i>
-                            <span class="text-red-700 text-sm">' . htmlspecialchars($login_err) . '</span>
-                        </div>';
-                    }        
-                    ?>
+                    <!-- Username Field -->
+                    <div class="form-group">
+                        <label for="username" class="block text-xs font-semibold text-slate-700 mb-1.5">
+                            <i class="fas fa-user mr-1.5 text-slate-500"></i>Username
+                        </label>
+                        <input 
+                            type="text" 
+                            id="username"
+                            name="username" 
+                            class="input-field w-full px-3 py-2.5 rounded-lg text-xs text-slate-900 placeholder-slate-400 focus:outline-none <?php echo (!empty($username_err)) ? 'error' : ''; ?>" 
+                            placeholder="Enter your username"
+                            value="<?php echo htmlspecialchars($username); ?>"
+                            required
+                        >
+                        <?php if(!empty($username_err)): ?>
+                            <p class="mt-1 text-red-500 text-xs flex items-center">
+                                <i class="fas fa-times-circle mr-1"></i><?php echo htmlspecialchars($username_err); ?>
+                            </p>
+                        <?php endif; ?>
+                    </div>
                     
-                    <!-- Login Form -->
-                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" class="space-y-5">
-                        
-                        <!-- Username Field -->
-                        <div class="form-group">
-                            <label for="username" class="block text-sm font-medium text-slate-700 mb-2">
-                                <i class="fas fa-user mr-2 text-slate-500"></i>Username
-                            </label>
-                            <input 
-                                type="text" 
-                                id="username"
-                                name="username" 
-                                class="input-field w-full px-4 py-3 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none <?php echo (!empty($username_err)) ? 'error' : ''; ?>" 
-                                placeholder="Enter your username"
-                                value="<?php echo htmlspecialchars($username); ?>"
-                                required
-                            >
-                            <?php if(!empty($username_err)): ?>
-                                <p class="mt-2 text-red-500 text-sm flex items-center">
-                                    <i class="fas fa-times-circle mr-1"></i><?php echo htmlspecialchars($username_err); ?>
-                                </p>
-                            <?php endif; ?>
-                        </div>
-                        
-                        <!-- Password Field -->
-                        <div class="form-group">
-                            <label for="password" class="block text-sm font-medium text-slate-700 mb-2">
-                                <i class="fas fa-lock mr-2 text-slate-500"></i>Password
-                            </label>
+                    <!-- Password Field -->
+                    <div class="form-group">
+                        <label for="password" class="block text-xs font-semibold text-slate-700 mb-1.5">
+                            <i class="fas fa-lock mr-1.5 text-slate-500"></i>Password
+                        </label>
+                        <div class="relative">
                             <input 
                                 type="password" 
                                 id="password"
                                 name="password" 
-                                class="input-field w-full px-4 py-3 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none <?php echo (!empty($password_err)) ? 'error' : ''; ?>" 
+                                class="input-field w-full px-3 py-2.5 pr-10 rounded-lg text-xs text-slate-900 placeholder-slate-400 focus:outline-none <?php echo (!empty($password_err)) ? 'error' : ''; ?>" 
                                 placeholder="Enter your password"
                                 required
                             >
-                            <?php if(!empty($password_err)): ?>
-                                <p class="mt-2 text-red-500 text-sm flex items-center">
-                                    <i class="fas fa-times-circle mr-1"></i><?php echo htmlspecialchars($password_err); ?>
-                                </p>
-                            <?php endif; ?>
+                            <button type="button" id="togglePassword" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none text-xs" tabindex="-1">
+                                <i class="fas fa-eye" id="eyeIcon"></i>
+                            </button>
                         </div>
-                        
-                        <!-- Remember Me & Forgot Password -->
-                        <div class="flex items-center justify-between text-sm">
-                            <label class="flex items-center text-slate-700 cursor-pointer">
-                                <input type="checkbox" class="w-4 h-4 rounded border-slate-300" name="remember">
-                                <span class="ml-2">Remember me</span>
-                            </label>
-                            <a href="#" class="text-purple-600 hover:text-purple-700 font-medium">Forgot password?</a>
-                        </div>
-                        
-                        <!-- Submit Button -->
-                        <button 
-                            type="submit" 
-                            class="btn-login w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-3 rounded-lg mt-8 flex items-center justify-center"
-                        >
-                            <i class="fas fa-sign-in-alt mr-2"></i>Sign In
-                        </button>
-                    </form>
-                    
-                    <!-- Help Text -->
-                    <div class="mt-8 pt-6 border-t border-slate-200">
-                        <p class="text-center text-slate-600 text-sm">
-                            Need help? Contact your administrator or email 
-                            <a href="mailto:support@bisu.edu" class="text-purple-600 hover:text-purple-700 font-medium">support@bisu.edu</a>
-                        </p>
+                        <?php if(!empty($password_err)): ?>
+                            <p class="mt-1 text-red-500 text-xs flex items-center">
+                                <i class="fas fa-times-circle mr-1"></i><?php echo htmlspecialchars($password_err); ?>
+                            </p>
+                        <?php endif; ?>
                     </div>
+                    
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="flex items-center justify-between text-xs">
+                        <label class="flex items-center text-slate-700 cursor-pointer">
+                            <input type="checkbox" class="w-3.5 h-3.5 rounded border-slate-300" name="remember">
+                            <span class="ml-1.5 text-xs">Remember me</span>
+                        </label>
+                        <a href="#" class="text-purple-600 hover:text-purple-700 font-medium text-xs">Forgot?</a>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button 
+                        type="submit" 
+                        class="btn-login w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-2.5 px-4 rounded-lg mt-5 flex items-center justify-center text-sm"
+                    >
+                        <i class="fas fa-sign-in-alt mr-1.5"></i>Sign In
+                    </button>
+                </form>
+                
+                <!-- Register Link -->
+                <div class="mt-5 pt-4 border-t border-slate-200">
+                    <p class="text-center text-slate-600 text-xs mb-2.5">
+                        Don't have an account?
+                        <a href="register.php" class="text-purple-600 hover:text-purple-700 font-medium">Register</a>
+                    </p>
+                    <p class="text-center text-slate-500 text-xs">
+                        Need help? <a href="mailto:support@bisu.edu" class="text-purple-600 hover:text-purple-700 font-medium">support@bisu.edu</a>
+                    </p>
                 </div>
-            </div>
-            
-            <!-- Footer Text -->
-            <div class="text-center mt-6">
-                <p class="text-white text-sm opacity-90">
-                    <i class="fas fa-shield-alt mr-2"></i>Secure authentication required
-                </p>
             </div>
         </div>
     </div>
@@ -321,6 +356,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         document.getElementById('password').addEventListener('input', function() {
             this.classList.remove('error');
+        });
+
+        // Toggle password visibility
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const pwd = document.getElementById('password');
+            const icon = document.getElementById('eyeIcon');
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                pwd.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
         });
     </script>
 </body>

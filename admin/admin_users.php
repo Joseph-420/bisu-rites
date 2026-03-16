@@ -8,12 +8,30 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["role_id"] !== 1){
     exit;
 }
 
-// 2. Fetch all users with their Role Names
+// 2. Role filter
+$role_filter = isset($_GET['role']) ? $_GET['role'] : '';
+$allowed_filters = ['directors', 'faculty', 'student', ''];
+if (!in_array($role_filter, $allowed_filters)) $role_filter = '';
+
+// 3. Fetch users with optional role filter
 $sql = "SELECT u.user_id, u.username, u.first_name, u.last_name, u.role_id, r.role_name 
         FROM users u 
-        LEFT JOIN system_roles r ON u.role_id = r.role_id 
-        ORDER BY u.created_at DESC";
+        LEFT JOIN system_roles r ON u.role_id = r.role_id";
+if ($role_filter === 'directors') {
+    $sql .= " WHERE u.role_id IN (2, 3, 4)";
+} elseif ($role_filter === 'faculty') {
+    $sql .= " WHERE u.role_id = 5";
+} elseif ($role_filter === 'student') {
+    $sql .= " WHERE u.role_id = 6";
+}
+$sql .= " ORDER BY u.created_at DESC";
 $result = $conn->query($sql);
+
+// 4. Count by role groups
+$count_all = $conn->query("SELECT COUNT(*) as c FROM users")->fetch_assoc()['c'];
+$count_directors = $conn->query("SELECT COUNT(*) as c FROM users WHERE role_id IN (2, 3, 4)")->fetch_assoc()['c'];
+$count_faculty = $conn->query("SELECT COUNT(*) as c FROM users WHERE role_id = 5")->fetch_assoc()['c'];
+$count_students = $conn->query("SELECT COUNT(*) as c FROM users WHERE role_id = 6")->fetch_assoc()['c'];
 
 $page_title = "User Management";
 include "../includes/header.php";
@@ -51,12 +69,12 @@ include "../includes/header.php";
         <div class="content-wrapper">
             
             <!-- Stats Cards -->
-            <div class="grid grid-cols-3 mb-6">
+            <div class="grid grid-cols-4 mb-6">
                 <div class="stat-card animate-fadeIn">
                     <div class="stat-card-header">
                         <div>
                             <div class="stat-card-label">Total Users</div>
-                            <div class="stat-card-value"><?php echo $result->num_rows; ?></div>
+                            <div class="stat-card-value"><?php echo $count_all; ?></div>
                             <div class="stat-card-footer">Active accounts</div>
                         </div>
                         <div class="stat-card-icon">
@@ -69,7 +87,7 @@ include "../includes/header.php";
                     <div class="stat-card-header">
                         <div>
                             <div class="stat-card-label">Directors</div>
-                            <div class="stat-card-value">--</div>
+                            <div class="stat-card-value"><?php echo $count_directors; ?></div>
                             <div class="stat-card-footer">Department heads</div>
                         </div>
                         <div class="stat-card-icon">
@@ -82,7 +100,7 @@ include "../includes/header.php";
                     <div class="stat-card-header">
                         <div>
                             <div class="stat-card-label">Faculty</div>
-                            <div class="stat-card-value">--</div>
+                            <div class="stat-card-value"><?php echo $count_faculty; ?></div>
                             <div class="stat-card-footer">Teaching staff</div>
                         </div>
                         <div class="stat-card-icon">
@@ -90,12 +108,41 @@ include "../includes/header.php";
                         </div>
                     </div>
                 </div>
+
+                <div class="stat-card animate-fadeIn">
+                    <div class="stat-card-header">
+                        <div>
+                            <div class="stat-card-label">Students</div>
+                            <div class="stat-card-value"><?php echo $count_students; ?></div>
+                            <div class="stat-card-footer">Student accounts</div>
+                        </div>
+                        <div class="stat-card-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
             
+            <!-- Filter Tabs -->
+            <div class="flex space-x-2 mb-4">
+                <a href="admin_users.php" class="btn btn-sm <?php echo $role_filter === '' ? 'btn-primary' : 'btn-outline'; ?>">
+                    <i class="fas fa-users"></i> All (<?php echo $count_all; ?>)
+                </a>
+                <a href="?role=directors" class="btn btn-sm <?php echo $role_filter === 'directors' ? 'btn-primary' : 'btn-outline'; ?>">
+                    <i class="fas fa-user-tie"></i> Directors (<?php echo $count_directors; ?>)
+                </a>
+                <a href="?role=faculty" class="btn btn-sm <?php echo $role_filter === 'faculty' ? 'btn-primary' : 'btn-outline'; ?>">
+                    <i class="fas fa-chalkboard-user"></i> Faculty (<?php echo $count_faculty; ?>)
+                </a>
+                <a href="?role=student" class="btn btn-sm <?php echo $role_filter === 'student' ? 'btn-primary' : 'btn-outline'; ?>">
+                    <i class="fas fa-graduation-cap"></i> Students (<?php echo $count_students; ?>)
+                </a>
+            </div>
+
             <!-- Table Card -->
             <div class="card animate-fadeIn">
                 <div class="card-header">
-                    <h2>System Users</h2>
+                    <h2>System Users<?php echo $role_filter ? ' — ' . ucfirst($role_filter) : ''; ?></h2>
                     <p>Manage all user accounts and permissions</p>
                 </div>
                 
