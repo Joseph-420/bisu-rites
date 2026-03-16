@@ -7,7 +7,7 @@ if(!isset($_SESSION["loggedin"]) || in_array($_SESSION["role_id"], [1, 2, 3, 4])
 }
 
 $error = "";
-$colleges_result = $conn->query("SELECT college_id, college_name FROM colleges ORDER BY college_name ASC");
+$colleges_result = $conn->query("SELECT college_id, college_name FROM colleges WHERE college_code != 'ADMIN' ORDER BY college_name ASC");
 
 // Fetch eligible users (Faculty = 8, Student = 9) to populate the team dropdown
 // We exclude the currently logged-in user since they are automatically the Main Author.

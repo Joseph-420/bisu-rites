@@ -44,9 +44,11 @@ $page_title = "My Portal - BISU RITES";
                 <div class="flex-shrink-0 font-bold text-xl tracking-wider">
                     BISU R.I.T.E.S <span class="text-blue-300 text-sm font-normal">| Researcher Portal</span>
                 </div>
-                <div>
-                    <span class="mr-4">Welcome, <strong><?php echo htmlspecialchars($_SESSION["username"]); ?></strong></span>
-                    <a href="../logout.php" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm">Logout</a>
+                <div class="flex items-center space-x-4">
+                    <span class="mr-2 hidden md:inline">Welcome, <strong><?php echo htmlspecialchars($_SESSION["username"]); ?></strong></span>
+                    <a href="user_settings.php" class="text-blue-200 hover:text-white transition" title="Account Settings"><i class="fas fa-cog text-lg"></i></a>
+                    <span class="text-blue-400">|</span>
+                    <a href="../logout.php" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm transition font-medium shadow-sm">Logout</a>
                 </div>
             </div>
         </div>
@@ -113,13 +115,18 @@ $page_title = "My Portal - BISU RITES";
                     <table class="w-full text-left text-sm">
                         <tbody class="divide-y divide-slate-100">
                             <?php
-                            $my_proj_sql = "SELECT p.project_title, p.status FROM rd_proponents rp JOIN rd_projects p ON rp.rd_id = p.rd_id WHERE rp.user_id = ? ORDER BY p.rd_id DESC LIMIT 4";
+                            $my_proj_sql = "SELECT p.rd_id, p.project_title, p.status FROM rd_proponents rp JOIN rd_projects p ON rp.rd_id = p.rd_id WHERE rp.user_id = ? ORDER BY p.rd_id DESC LIMIT 4";
                             $stmt = $conn->prepare($my_proj_sql);
                             $stmt->bind_param("i", $user_id);
                             $stmt->execute();
                             $res = $stmt->get_result();
                             if($res->num_rows > 0) {
-                                while($row = $res->fetch_assoc()) echo "<tr><td class='p-2 text-slate-800'>" . htmlspecialchars(substr($row['project_title'],0,30)) . "...</td><td class='p-2 text-right'><span class='px-2 py-1 rounded text-xs bg-slate-100'>" . $row['status'] . "</span></td></tr>";
+                                while($row = $res->fetch_assoc()) {
+                                    echo "<tr class='hover:bg-slate-100 transition cursor-pointer' onclick=\"window.location='user_rd_view.php?id=".$row['rd_id']."'\">";
+                                    echo "<td class='p-2 text-blue-600 font-medium'>" . htmlspecialchars(substr($row['project_title'],0,30)) . "...</td>";
+                                    echo "<td class='p-2 text-right'><span class='px-2 py-1 rounded text-xs bg-slate-200 font-semibold'>" . $row['status'] . "</span></td>";
+                                    echo "</tr>";
+                                }
                             } else { echo "<tr><td class='p-4 text-center text-slate-400'>No R&D submissions.</td></tr>"; }
                             ?>
                         </tbody>
@@ -133,13 +140,18 @@ $page_title = "My Portal - BISU RITES";
                     <table class="w-full text-left text-sm">
                         <tbody class="divide-y divide-slate-100">
                             <?php
-                            $my_ip_sql = "SELECT a.title, a.status FROM ip_inventors i JOIN ip_assets a ON i.ip_id = a.ip_id WHERE i.user_id = ? ORDER BY a.ip_id DESC LIMIT 4";
+                            $my_ip_sql = "SELECT a.ip_id, a.title, a.status FROM ip_inventors i JOIN ip_assets a ON i.ip_id = a.ip_id WHERE i.user_id = ? ORDER BY a.ip_id DESC LIMIT 4";
                             $stmt = $conn->prepare($my_ip_sql);
                             $stmt->bind_param("i", $user_id);
                             $stmt->execute();
                             $res_ip = $stmt->get_result();
                             if($res_ip->num_rows > 0) {
-                                while($row = $res_ip->fetch_assoc()) echo "<tr><td class='p-2 text-slate-800'>" . htmlspecialchars(substr($row['title'],0,30)) . "...</td><td class='p-2 text-right'><span class='px-2 py-1 rounded text-xs bg-slate-100'>" . $row['status'] . "</span></td></tr>";
+                                while($row = $res_ip->fetch_assoc()) {
+                                    echo "<tr class='hover:bg-slate-100 transition cursor-pointer' onclick=\"window.location='user_itso_view.php?id=".$row['ip_id']."'\">";
+                                    echo "<td class='p-2 text-teal-600 font-medium'>" . htmlspecialchars(substr($row['title'],0,30)) . "...</td>";
+                                    echo "<td class='p-2 text-right'><span class='px-2 py-1 rounded text-xs bg-slate-200 font-semibold'>" . $row['status'] . "</span></td>";
+                                    echo "</tr>";
+                                }
                             } else { echo "<tr><td class='p-4 text-center text-slate-400'>No IPs disclosed.</td></tr>"; }
                             ?>
                         </tbody>
@@ -153,13 +165,18 @@ $page_title = "My Portal - BISU RITES";
                     <table class="w-full text-left text-sm">
                         <tbody class="divide-y divide-slate-100">
                             <?php
-                            $my_ext_sql = "SELECT e.project_title, e.service_status FROM ext_proponents ep JOIN ext_projects e ON ep.ext_id = e.ext_id WHERE ep.user_id = ? ORDER BY e.ext_id DESC LIMIT 4";
+                            $my_ext_sql = "SELECT e.ext_id, e.project_title, e.service_status FROM ext_proponents ep JOIN ext_projects e ON ep.ext_id = e.ext_id WHERE ep.user_id = ? ORDER BY e.ext_id DESC LIMIT 4";
                             $stmt = $conn->prepare($my_ext_sql);
                             $stmt->bind_param("i", $user_id);
                             $stmt->execute();
                             $res_ext = $stmt->get_result();
                             if($res_ext->num_rows > 0) {
-                                while($row = $res_ext->fetch_assoc()) echo "<tr><td class='p-2 text-slate-800'>" . htmlspecialchars(substr($row['project_title'],0,30)) . "...</td><td class='p-2 text-right'><span class='px-2 py-1 rounded text-xs bg-slate-100'>" . $row['service_status'] . "</span></td></tr>";
+                                while($row = $res_ext->fetch_assoc()) {
+                                    echo "<tr class='hover:bg-slate-100 transition cursor-pointer' onclick=\"window.location='user_ext_view.php?id=".$row['ext_id']."'\">";
+                                    echo "<td class='p-2 text-green-600 font-medium'>" . htmlspecialchars(substr($row['project_title'],0,30)) . "...</td>";
+                                    echo "<td class='p-2 text-right'><span class='px-2 py-1 rounded text-xs bg-slate-200 font-semibold'>" . $row['service_status'] . "</span></td>";
+                                    echo "</tr>";
+                                }
                             } else { echo "<tr><td class='p-4 text-center text-slate-400'>No Extension projects.</td></tr>"; }
                             ?>
                         </tbody>

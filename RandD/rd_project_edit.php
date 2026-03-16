@@ -38,7 +38,7 @@ $data = $stmt->get_result()->fetch_assoc();
 
 if(!$data) { header("location: rd_projects.php"); exit; }
 
-$colleges_result = $conn->query("SELECT college_id, college_name FROM colleges ORDER BY college_name ASC");
+$colleges_result = $conn->query("SELECT college_id, college_name FROM colleges WHERE college_code != 'ADMIN' ORDER BY college_name ASC");
 
 $page_title = "Edit Research Project";
 include "../includes/header.php";

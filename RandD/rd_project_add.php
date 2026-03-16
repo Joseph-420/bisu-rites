@@ -9,7 +9,7 @@ $title = $abstract = $status = $budget = $start_date = $end_date = $college_id =
 $error = "";
 
 // Fetch Colleges for the dropdown
-$colleges_sql = "SELECT college_id, college_name FROM colleges ORDER BY college_name ASC";
+$colleges_sql = "SELECT college_id, college_name FROM colleges WHERE college_code != 'ADMIN' ORDER BY college_name ASC";
 $colleges_result = $conn->query($colleges_sql);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

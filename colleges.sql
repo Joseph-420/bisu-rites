@@ -39,7 +39,6 @@ CREATE TABLE `colleges` (
 --
 
 INSERT INTO `colleges` (`college_id`, `college_code`, `college_name`, `created_at`) VALUES
-(1, 'ADMIN', 'System Administration', '2026-02-10 00:28:31'),
 (3, 'COS', 'College of Sciences', '2026-02-20 12:53:59');
 
 --
